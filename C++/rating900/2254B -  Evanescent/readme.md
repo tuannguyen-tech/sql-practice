@@ -22,9 +22,6 @@ Compressed: ABCD
 ```
 
 **Yêu cầu:** Tìm độ dài chuỗi sau khi thực hiện thao tác xóa và nén sao cho kết quả nhỏ nhất.
-
-Thay vì thử xóa từng ký tự rồi nén lại toàn bộ chuỗi, ta cần tìm cách xác định mức độ thay đổi khi xóa một ký tự.
-
 ---
 
 ## 2. Tính độ dài chuỗi nén ban đầu (Original Compressed Length)

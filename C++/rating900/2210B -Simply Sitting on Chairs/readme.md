@@ -1,14 +1,12 @@
 # Codeforces 2210B – Simply Sitting on Chairs
 
-**Topic:** Greedy, Permutation, Array
+**Topic:** Greedy, Permutation, Data Structures
 
 **Platform:** Codeforces
 
 **Problem:** Simply Sitting on Chairs
 
 **Difficulty:** 900
-
-**Contest:** Codeforces Round 1089 (Div. 2)
 
 ---
 
@@ -41,7 +39,7 @@ Nếu chọn ngồi lên ghế thứ `i`:
 - Sau khi đứng dậy, ghế thứ `p[i]` sẽ được đánh dấu.
 - Sau đó tiếp tục di chuyển đến ghế tiếp theo.
 
-Trò chơi cũng kết thúc nếu ta đã đi qua tất cả `n` chiếc ghế.
+Trò chơi cũng kết thúc nếu đã đi qua tất cả `n` chiếc ghế.
 
 **Yêu cầu bài toán:**
 
@@ -75,7 +73,7 @@ Với mỗi test case, in ra một số nguyên là số lượng ghế tối đ
 
 Khi ngồi lên ghế thứ `i`, ta sẽ đánh dấu ghế thứ `p[i]`.
 
-Điều này tạo ra hai trường hợp hoàn toàn khác nhau.
+Điều này tạo ra hai trường hợp:
 
 **Trường hợp 1: `p[i] ≤ i`**
 
@@ -83,9 +81,12 @@ Ghế được đánh dấu nằm ở vị trí hiện tại hoặc phía trư�
 
 Ví dụ:
 
-- Đang ở ghế 3.
-- `p[3] = 2`.
-- Khi ngồi lên ghế 3, ghế 2 được đánh dấu.
+```text
+i = 3
+p[i] = 2
+```
+
+Khi ngồi lên ghế 3, ghế 2 được đánh dấu.
 
 Tuy nhiên, ta đã đi qua ghế 2 rồi.
 
@@ -99,161 +100,229 @@ Ghế được đánh dấu nằm ở phía trước, tức là một chiếc gh
 
 Ví dụ:
 
-- Đang ở ghế 2.
-- `p[2] = 5`.
-- Khi ngồi lên ghế 2, ghế 5 sẽ bị đánh dấu.
+```text
+i = 2
+p[i] = 5
+```
+
+Khi ngồi lên ghế 2, ghế 5 sẽ bị đánh dấu.
 
 Khi di chuyển đến ghế 5, ta sẽ phát hiện ghế đã được đánh dấu và trò chơi kết thúc ngay lập tức.
 
 Điều này khiến ta không thể tiếp tục ngồi lên những chiếc ghế phía sau.
 
-Đây là một lựa chọn không an toàn.
+Tuy nhiên, không phải tất cả các trường hợp `p[i] > i` đều cần bỏ qua. Điều quan trọng là vị trí được đánh dấu có nằm trước thời điểm trò chơi kết thúc hay không.
 
-**Nhận xét quan trọng:**
+### 2.2. Xác định vị trí kết thúc trò chơi
 
-Ta có thể chia các vị trí thành hai nhóm:
+Đây là nhận xét quan trọng trong lời giải.
 
-| Điều kiện | Ý nghĩa |
-|---|---|
-| `p[i] ≤ i` | Đánh dấu ghế đã đi qua hoặc ghế hiện tại |
-| `p[i] > i` | Đánh dấu một chiếc ghế trong tương lai |
+Giả sử trò chơi kết thúc tại ghế thứ `k`.
 
-Như vậy, điều quyết định một vị trí có an toàn hay không chính là mối quan hệ giữa `p[i]` và `i`.
+Nếu ta đi qua hết tất cả ghế mà không bị dừng lại, ta quy ước `k = n + 1`.
 
-### 2.2. Tại sao nên chọn những vị trí có `p[i] ≤ i`?
+Khi đó, ta chỉ có thể ngồi tại những chiếc ghế có vị trí nhỏ hơn `k`.
 
-Hãy xét một ví dụ:
+Xét một vị trí `i < k`.
 
-```text
-n = 5
-p = [4, 3, 2, 5, 1]
-```
+Nếu ngồi tại ghế `i`, ta đánh dấu ghế `p[i]`.
 
-Ta lần lượt xét từng vị trí:
+Để không khiến trò chơi kết thúc trước ghế `k`, vị trí được đánh dấu phải thỏa mãn một trong hai điều kiện:
 
-| Vị trí `i` | `p[i]` | Điều kiện | Có nên ngồi? |
-|---|---:|---|---|
-| 1 | 4 | 4 > 1 | Không |
-| 2 | 3 | 3 > 2 | Không |
-| 3 | 2 | 2 ≤ 3 | Có |
-| 4 | 5 | 5 > 4 | Không |
-| 5 | 1 | 1 ≤ 5 | Có |
+- `p[i] ≤ i`: Ghế được đánh dấu đã được đi qua hoặc chính là ghế hiện tại.
+- `p[i] ≥ k`: Ghế được đánh dấu nằm tại hoặc phía sau vị trí kết thúc trò chơi.
 
-Ta có thể lựa chọn:
-
-- Bỏ qua ghế 1.
-- Bỏ qua ghế 2.
-- Ngồi ghế 3 và đánh dấu ghế 2.
-- Bỏ qua ghế 4.
-- Ngồi ghế 5 và đánh dấu ghế 1.
-
-Cả ghế 2 và ghế 1 đều đã được đi qua nên việc đánh dấu không gây ảnh hưởng.
-
-Kết quả là ta ngồi được 2 chiếc ghế.
-
-**Nhận xét:**
-
-Những vị trí thỏa mãn `p[i] ≤ i` luôn có thể được chọn mà không làm ảnh hưởng đến các vị trí phía sau.
-
-Ngược lại, nếu `p[i] > i`, việc ngồi lên có thể khiến trò chơi kết thúc sớm.
-
-### 2.3. Tại sao không nên ngồi lên vị trí có `p[i] > i`?
-
-Đây là nhận xét quan trọng để hiểu bản chất Greedy.
-
-Giả sử ta đang ở vị trí `i` và:
+Ngược lại, nếu:
 
 ```text
-p[i] = j
+i < p[i] < k
 ```
 
-với `j > i`.
+thì ta đánh dấu một chiếc ghế chưa được đi qua và nằm trước vị trí kết thúc dự kiến.
 
-Nếu ngồi lên ghế `i`, ta sẽ đánh dấu ghế `j`.
+Khi đến chiếc ghế đó, trò chơi sẽ kết thúc sớm hơn `k`.
 
-Khi đi đến ghế `j`, trò chơi sẽ kết thúc.
+Như vậy, với một vị trí kết thúc `k`, số ghế tối đa có thể ngồi là số vị trí `i < k` thỏa mãn:
 
-Ta có thể nhận thêm 1 chiếc ghế tại vị trí `i`, nhưng đổi lại có nguy cơ mất tất cả những cơ hội ngồi ở các vị trí từ `i + 1` đến `j`.
+```text
+p[i] <= i OR p[i] >= k
+```
 
-Đặc biệt, vì `p` là một hoán vị nên mỗi giá trị chỉ xuất hiện đúng một lần.
+Ta có thể biểu diễn:
 
-Nếu `p[i] = j`, thì không có vị trí nào khác đánh dấu ghế `j` thông qua cùng giá trị đó.
+```text
+f(k) = số vị trí i < k thỏa mãn:
+       p[i] <= i hoặc p[i] >= k
+```
 
-Việc lựa chọn ngồi ở vị trí không an toàn không thể giúp tăng số ghế tối đa so với chiến lược chỉ chọn các vị trí an toàn.
+Trong đó:
 
-Do đó, chiến lược tối ưu là:
+```text
+1 <= k <= n + 1
+```
 
-- Ngồi tại tất cả vị trí thỏa mãn `p[i] ≤ i`.
-- Bỏ qua tất cả vị trí thỏa mãn `p[i] > i`.
+### 2.3. Tại sao không cần thử tất cả vị trí kết thúc?
+
+Ban đầu, ta có thể nghĩ rằng cần thử tất cả các giá trị `k` từ `1` đến `n + 1`.
+
+Sau đó, với mỗi `k`, ta đếm số vị trí có thể ngồi.
+
+Tuy nhiên, có một nhận xét quan trọng giúp tối ưu toàn bộ bài toán:
+
+**Luôn tồn tại một chiến lược tối ưu mà trò chơi kết thúc sau khi đi qua tất cả n chiếc ghế.**
+
+Nói cách khác, ta có thể chọn:
+
+```text
+k = n + 1
+```
+
+Để hiểu tại sao, ta xét một vị trí kết thúc bất kỳ `k ≤ n`.
+
+Gọi `ct` là số vị trí thỏa mãn:
+
+```text
+i < k và p[i] >= k
+```
+
+Đây là những vị trí mà ta có thể ngồi vì chúng đánh dấu ghế nằm tại hoặc phía sau `k`.
+
+Bây giờ, vì `p` là một hoán vị, mỗi giá trị chỉ xuất hiện đúng một lần.
+
+Có `ct` giá trị nằm trong đoạn `[k, n]` xuất hiện ở các vị trí trước `k`.
+
+Do đó, cũng có đúng `ct` giá trị nhỏ hơn `k` phải xuất hiện tại các vị trí từ `k` đến `n`.
+
+Với những vị trí này:
+
+```text
+i >= k
+p[i] < k
+```
+
+Suy ra:
+
+```text
+p[i] <= i
+```
+
+Như vậy, phía sau vị trí `k` có ít nhất `ct` vị trí an toàn mà ta có thể ngồi.
+
+Điều này có nghĩa là:
+
+Số ghế có thể ngồi ở phía sau `k` ít nhất bằng số ghế ta có thể ngồi nhờ điều kiện `p[i] >= k` ở phía trước `k`.
+
+Vì vậy, thay vì kết thúc trò chơi tại `k`, ta có thể bỏ qua những vị trí gây kết thúc sớm và tiếp tục chọn các vị trí an toàn phía sau.
+
+Kết quả không bị giảm.
+
+Do đó, lựa chọn tối ưu luôn là:
+
+```text
+k = n + 1
+```
+
+### 2.4. Tìm điều kiện cuối cùng
+
+Khi:
+
+```text
+k = n + 1
+```
+
+Ta có:
+
+```text
+p[i] >= n + 1
+```
+
+là điều không thể xảy ra vì mọi giá trị trong hoán vị đều nằm trong `[1, n]`.
+
+Vì vậy, điều kiện:
+
+```text
+p[i] <= i OR p[i] >= k
+```
+
+được rút gọn thành:
+
+```text
+p[i] <= i
+```
+
+Đây chính là nhận xét quyết định của bài toán.
+
+**Kết luận:**
+
+Đáp án là số lượng vị trí thỏa mãn:
+
+```text
+p[i] <= i
+```
 
 ---
 
 ## 3. Tối ưu ý tưởng bằng Greedy
 
-### 3.1. Nhận ra điều kiện quyết định
+### 3.1. Từ Brute Force đến Greedy
 
-Ban đầu, ta có thể nghĩ đến việc:
+Một cách tiếp cận Brute Force ban đầu có thể là:
 
-- Thử ngồi hoặc bỏ qua tại từng chiếc ghế.
-- Mô phỏng quá trình đánh dấu.
-- Tìm ra cách lựa chọn mang lại số ghế lớn nhất.
+- Thử tất cả các vị trí kết thúc trò chơi `k`.
+- Với mỗi `k`, duyệt các vị trí từ `1` đến `k - 1`.
+- Kiểm tra xem có thể ngồi tại vị trí đó hay không.
+- Tính tổng số ghế có thể ngồi.
+- Lấy giá trị lớn nhất.
 
-Tuy nhiên, mỗi vị trí đều có hai lựa chọn.
+Có `n + 1` khả năng kết thúc trò chơi.
 
-Với `n` vị trí, số cách lựa chọn có thể lên đến:
+Với mỗi khả năng, ta cần duyệt tối đa `n` vị trí.
 
-\[
-2^n
-\]
+Do đó, độ phức tạp có thể lên đến:
 
-Đây là cách tiếp cận Brute Force không phù hợp với giới hạn đề bài.
+```text
+O(n^2)
+```
 
-Thay vì thử tất cả các cách, ta cần tìm ra đặc điểm của một lựa chọn tối ưu.
+Với tổng `n` lên đến `2 × 10^5`, cách làm này không phù hợp.
 
-Từ những nhận xét phía trên:
+Thay vì thử tất cả các vị trí kết thúc, ta tận dụng nhận xét:
 
-- Nếu `p[i] ≤ i`, việc ngồi không ảnh hưởng đến tương lai.
-- Nếu `p[i] > i`, việc ngồi sẽ đánh dấu một ghế chưa được đi qua và có thể kết thúc trò chơi sớm.
+- Luôn tồn tại một chiến lược tối ưu kết thúc tại `n + 1`.
+- Khi đó, chỉ những vị trí có `p[i] <= i` mới có thể được chọn.
 
-Vì vậy, ta chỉ cần đếm số vị trí thỏa mãn:
-
-\[
-p[i] \leq i
-\]
+Nhờ vậy, bài toán được chuyển thành một phép đếm đơn giản.
 
 ### 3.2. Ý tưởng Greedy
 
-Thuật toán gồm hai bước:
+Ta chỉ cần thực hiện hai bước:
 
 **Bước 1: Duyệt toàn bộ hoán vị.**
 
-Với mỗi vị trí `i`, kiểm tra điều kiện:
+Với mỗi vị trí `i`, kiểm tra:
 
-\[
-p[i] \leq i
-\]
+```text
+p[i] <= i
+```
 
 **Bước 2: Đếm số vị trí thỏa mãn.**
 
-- Nếu `p[i] ≤ i`, tăng biến đếm `ans` lên 1.
+- Nếu `p[i] <= i`, tăng biến đếm `ans` lên 1.
 - Nếu `p[i] > i`, bỏ qua vị trí đó.
 
 Sau khi duyệt hết mảng, `ans` chính là đáp án.
 
 Công thức:
 
-\[
-\boxed{ans = \sum_{i=1}^{n}[p[i]\leq i]}
-\]
-
-Trong đó, biểu thức trong ngoặc vuông có giá trị:
-
-- 1 nếu điều kiện đúng.
-- 0 nếu điều kiện sai.
+```text
+ans = count(p[i] <= i)
+```
 
 **Bản chất Greedy:**
 
-Thay vì thử mọi cách lựa chọn, ta luôn ưu tiên những vị trí có thể ngồi mà không gây ảnh hưởng đến các vị trí chưa được thăm.
+Ta lựa chọn tất cả các vị trí có thể ngồi mà không gây ảnh hưởng đến quá trình di chuyển trong tương lai.
+
+Thay vì mô phỏng trò chơi với nhiều chiến lược khác nhau, ta sử dụng một điều kiện đơn giản để xác định trực tiếp những vị trí có thể chọn trong một chiến lược tối ưu.
 
 ---
 
@@ -270,17 +339,19 @@ p = [3, 2, 1]
 
 Ta xét từng vị trí:
 
-| `i` | `p[i]` | Điều kiện | `ans` |
+| `i` | `p[i]` | Điều kiện `p[i] <= i` | `ans` |
 |---|---:|---|---:|
-| 1 | 3 | 3 ≤ 1: Sai | 0 |
-| 2 | 2 | 2 ≤ 2: Đúng | 1 |
-| 3 | 1 | 1 ≤ 3: Đúng | 2 |
+| 1 | 3 | Sai | 0 |
+| 2 | 2 | Đúng | 1 |
+| 3 | 1 | Đúng | 2 |
+
+Ta có thể ngồi tại ghế 2 và ghế 3.
 
 Kết quả:
 
-\[
-\boxed{2}
-\]
+```text
+2
+```
 
 ### 4.2. Ví dụ 2
 
@@ -289,19 +360,21 @@ n = 5
 p = [4, 3, 2, 5, 1]
 ```
 
-| `i` | `p[i]` | Điều kiện | `ans` |
+| `i` | `p[i]` | Điều kiện `p[i] <= i` | `ans` |
 |---|---:|---|---:|
-| 1 | 4 | 4 ≤ 1: Sai | 0 |
-| 2 | 3 | 3 ≤ 2: Sai | 0 |
-| 3 | 2 | 2 ≤ 3: Đúng | 1 |
-| 4 | 5 | 5 ≤ 4: Sai | 1 |
-| 5 | 1 | 1 ≤ 5: Đúng | 2 |
+| 1 | 4 | Sai | 0 |
+| 2 | 3 | Sai | 0 |
+| 3 | 2 | Đúng | 1 |
+| 4 | 5 | Sai | 1 |
+| 5 | 1 | Đúng | 2 |
+
+Ta có thể ngồi tại ghế 3 và ghế 5.
 
 Kết quả:
 
-\[
-\boxed{2}
-\]
+```text
+2
+```
 
 ### 4.3. Ví dụ 3
 
@@ -310,18 +383,20 @@ n = 4
 p = [4, 2, 1, 3]
 ```
 
-| `i` | `p[i]` | Điều kiện | `ans` |
+| `i` | `p[i]` | Điều kiện `p[i] <= i` | `ans` |
 |---|---:|---|---:|
-| 1 | 4 | 4 ≤ 1: Sai | 0 |
-| 2 | 2 | 2 ≤ 2: Đúng | 1 |
-| 3 | 1 | 1 ≤ 3: Đúng | 2 |
-| 4 | 3 | 3 ≤ 4: Đúng | 3 |
+| 1 | 4 | Sai | 0 |
+| 2 | 2 | Đúng | 1 |
+| 3 | 1 | Đúng | 2 |
+| 4 | 3 | Đúng | 3 |
+
+Ta có thể ngồi tại ghế 2, 3 và 4.
 
 Kết quả:
 
-\[
-\boxed{3}
-\]
+```text
+3
+```
 
 ### 4.4. Ví dụ 4
 
@@ -330,22 +405,24 @@ n = 4
 p = [2, 3, 4, 1]
 ```
 
-| `i` | `p[i]` | Điều kiện | `ans` |
+| `i` | `p[i]` | Điều kiện `p[i] <= i` | `ans` |
 |---|---:|---|---:|
-| 1 | 2 | 2 ≤ 1: Sai | 0 |
-| 2 | 3 | 3 ≤ 2: Sai | 0 |
-| 3 | 4 | 4 ≤ 3: Sai | 0 |
-| 4 | 1 | 1 ≤ 4: Đúng | 1 |
+| 1 | 2 | Sai | 0 |
+| 2 | 3 | Sai | 0 |
+| 3 | 4 | Sai | 0 |
+| 4 | 1 | Đúng | 1 |
+
+Chỉ có ghế thứ 4 thỏa mãn điều kiện.
 
 Kết quả:
 
-\[
-\boxed{1}
-\]
+```text
+1
+```
 
 ### 4.5. Tổng hợp Dry Run
 
-| Test case | Hoán vị `p` | Số vị trí `p[i] ≤ i` | Kết quả |
+| Test case | Hoán vị `p` | Số vị trí `p[i] <= i` | Kết quả |
 |---|---|---:|---:|
 | 1 | `[3, 2, 1]` | 2 | 2 |
 | 2 | `[4, 3, 2, 5, 1]` | 2 | 2 |
@@ -358,79 +435,113 @@ Kết quả:
 
 Ta cần chứng minh rằng đáp án của bài toán chính là số lượng vị trí thỏa mãn:
 
-\[
-p[i] \leq i
-\]
+```text
+p[i] <= i
+```
 
-### 5.1. Điều kiện đủ (Sufficiency)
+### 5.1. Xác định số ghế tối đa nếu trò chơi kết thúc tại k
 
-Ta chứng minh rằng tất cả các vị trí thỏa mãn `p[i] ≤ i` đều có thể được ngồi.
+Giả sử trò chơi kết thúc tại ghế thứ `k`.
 
-Xét một vị trí `i` thỏa mãn:
+Nếu trò chơi đi qua hết tất cả ghế, ta quy ước `k = n + 1`.
 
-\[
-p[i] \leq i
-\]
+Ta chỉ có thể ngồi tại những vị trí `i < k`.
 
-Khi ngồi lên ghế thứ `i`, ta đánh dấu ghế thứ `p[i]`.
+Để trò chơi không kết thúc trước `k`, nếu ngồi tại ghế `i`, ta phải thỏa mãn một trong hai điều kiện:
 
-Vì:
+```text
+p[i] <= i
+```
 
-\[
-p[i] \leq i
-\]
+hoặc:
 
-nên ghế được đánh dấu nằm ở vị trí đã đi qua hoặc chính vị trí hiện tại.
+```text
+p[i] >= k
+```
 
-Do đó, việc đánh dấu không ảnh hưởng đến bất kỳ chiếc ghế nào trong tương lai.
+Nếu `i < p[i] < k`, ta sẽ đánh dấu một chiếc ghế nằm trước `k` nhưng chưa được đi qua. Khi đến chiếc ghế đó, trò chơi sẽ kết thúc.
 
-Vì vậy, ta có thể ngồi lên tất cả các vị trí thỏa mãn điều kiện này mà không khiến trò chơi kết thúc sớm.
+Do đó, số ghế tối đa khi trò chơi kết thúc tại `k` là:
 
-Suy ra số ghế có thể ngồi ít nhất bằng số vị trí thỏa mãn `p[i] ≤ i`.
+```text
+f(k) = count(i < k và (p[i] <= i hoặc p[i] >= k))
+```
 
-### 5.2. Điều kiện cần (Necessity)
+### 5.2. Chứng minh lựa chọn k = n + 1 luôn tối ưu
 
-Ta chứng minh rằng việc ngồi tại các vị trí có `p[i] > i` không thể giúp tạo ra một đáp án lớn hơn.
+Xét một giá trị bất kỳ `k <= n`.
 
-Xét một vị trí `i` thỏa mãn:
+Gọi `ct` là số vị trí thỏa mãn:
 
-\[
-p[i] > i
-\]
+```text
+i < k và p[i] >= k
+```
 
-Đặt:
+Đây là những vị trí có thể ngồi ở phía trước `k` nhờ đánh dấu một chiếc ghế nằm tại hoặc phía sau `k`.
 
-\[
-j=p[i]
-\]
+Vì `p` là một hoán vị nên mỗi giá trị từ `1` đến `n` xuất hiện đúng một lần.
 
-Nếu ngồi lên ghế `i`, ghế `j` sẽ bị đánh dấu và trò chơi chắc chắn kết thúc khi đến ghế `j`.
+Có `ct` giá trị thuộc đoạn `[k, n]` xuất hiện ở các vị trí trước `k`.
 
-Vì `p` là một hoán vị, chỉ có một vị trí `i` thỏa mãn `p[i]=j`.
+Vì vậy, cũng có đúng `ct` giá trị thuộc đoạn `[1, k - 1]` xuất hiện tại các vị trí từ `k` đến `n`.
 
-Ta có hai trường hợp:
+Xét một vị trí `j >= k` có `p[j] < k`.
 
-- Nếu `p[j] ≤ j`, ghế `j` vốn là một vị trí an toàn. Ngồi tại `i` khiến ta có thể mất cơ hội ngồi tại `j` và các vị trí an toàn phía sau.
-- Nếu `p[j] > j`, ghế `j` không phải vị trí an toàn. Tuy nhiên, việc đánh dấu ghế `j` vẫn có thể khiến ta mất cơ hội ngồi tại những vị trí an toàn nằm phía sau nó.
+Ta luôn có:
 
-Nói cách khác, lựa chọn ngồi tại một vị trí không an toàn không thể tạo ra lợi ích lớn hơn việc bỏ qua vị trí đó và tiếp tục chọn những vị trí an toàn.
+```text
+p[j] < k <= j
+```
 
-Do đó, luôn tồn tại một chiến lược tối ưu chỉ ngồi tại các vị trí thỏa mãn `p[i] ≤ i`.
+Suy ra:
 
-### 5.3. Kết luận
+```text
+p[j] <= j
+```
 
-Ta đã chứng minh:
+Như vậy, có ít nhất `ct` vị trí an toàn ở phía sau `k`.
 
-- Tất cả vị trí có `p[i] ≤ i` đều có thể ngồi mà không ảnh hưởng đến tương lai.
-- Những vị trí có `p[i] > i` không cần được lựa chọn trong một chiến lược tối ưu.
+Điều này chứng minh rằng số vị trí thỏa mãn `p[i] <= i` ở phía sau `k` luôn lớn hơn hoặc bằng số vị trí thỏa mãn `p[i] >= k` ở phía trước `k`.
 
-Vì vậy:
+Do đó, nếu thay vì kết thúc tại `k`, ta tiếp tục trò chơi đến cuối cùng và lựa chọn các vị trí an toàn, số ghế có thể ngồi không nhỏ hơn.
 
-\[
-\boxed{ans = \sum_{i=1}^{n}[p[i]\leq i]}
-\]
+Suy ra:
 
-Thuật toán đếm số vị trí thỏa mãn `p[i] ≤ i` là chính xác.
+```text
+f(n + 1) >= f(k)
+```
+
+Vì điều này đúng với mọi `k`, nên lựa chọn `k = n + 1` luôn tối ưu.
+
+### 5.3. Suy ra công thức đáp án
+
+Khi:
+
+```text
+k = n + 1
+```
+
+Điều kiện:
+
+```text
+p[i] >= k
+```
+
+không thể xảy ra vì `p[i] <= n`.
+
+Do đó, chỉ còn điều kiện:
+
+```text
+p[i] <= i
+```
+
+Vậy đáp án chính là số lượng vị trí thỏa mãn điều kiện trên.
+
+```text
+ans = count(p[i] <= i)
+```
+
+Thuật toán Greedy đếm các vị trí thỏa mãn `p[i] <= i` là chính xác.
 
 ---
 
@@ -444,15 +555,15 @@ Ta chỉ cần duyệt mảng một lần.
 
 Tại mỗi vị trí, thực hiện một phép so sánh:
 
-\[
-p[i] \leq i
-\]
+```text
+p[i] <= i
+```
 
 Do đó:
 
-\[
-\boxed{O(n)}
-\]
+```text
+O(n)
+```
 
 Với tổng độ dài các test case không vượt quá `2 × 10^5`, thuật toán đáp ứng tốt giới hạn thời gian.
 
@@ -460,17 +571,17 @@ Với tổng độ dài các test case không vượt quá `2 × 10^5`, thuật 
 
 Nếu tính cả mảng đầu vào, cần:
 
-\[
+```text
 O(n)
-\]
+```
 
 Bên cạnh mảng đầu vào, thuật toán chỉ sử dụng một biến đếm `ans`.
 
-Vì vậy, **Auxiliary Space Complexity** là:
+Do đó, Auxiliary Space Complexity là:
 
-\[
-\boxed{O(1)}
-\]
+```text
+O(1)
+```
 
 ---
 
@@ -478,15 +589,15 @@ Vì vậy, **Auxiliary Space Complexity** là:
 
 1. **Phân tích ảnh hưởng của thao tác:** Khi một hành động tác động đến vị trí khác, cần xác định xem vị trí đó nằm ở quá khứ, hiện tại hay tương lai.
 
-2. **Phân biệt lựa chọn an toàn và không an toàn:** Điều kiện `p[i] ≤ i` cho biết việc ngồi tại vị trí hiện tại không ảnh hưởng đến quá trình di chuyển tiếp theo.
+2. **Xác định thời điểm kết thúc:** Thay vì chỉ xét việc ngồi hay bỏ qua từng ghế, hãy thử cố định vị trí mà trò chơi kết thúc để tìm ra điều kiện có thể lựa chọn.
 
-3. **Nhận diện chiến lược Greedy:** Không cần thử mọi cách ngồi hoặc bỏ qua. Ta có thể đưa ra quyết định dựa trên một điều kiện đơn giản tại từng vị trí.
+3. **Tận dụng tính chất Permutation:** Mỗi giá trị chỉ xuất hiện một lần. Điều này giúp xây dựng lập luận đếm số vị trí giữa hai phía của một ranh giới.
 
-4. **Tận dụng tính chất của Permutation:** Mỗi giá trị chỉ xuất hiện một lần. Tính chất này giúp phân tích mối quan hệ giữa vị trí được chọn và vị trí bị đánh dấu.
+4. **Sử dụng Exchange Argument:** So sánh lợi ích của việc ngồi tại những vị trí trước điểm kết thúc với những vị trí an toàn ở phía sau để chứng minh rằng có thể chọn phương án kết thúc cuối cùng.
 
-5. **Tối ưu từ Brute Force:** Thay vì xét `2^n` cách lựa chọn, ta chỉ cần một lần duyệt mảng với độ phức tạp `O(n)`.
+5. **Nhận diện chiến lược Greedy:** Không cần thử tất cả các khả năng. Ta có thể tìm được điều kiện quyết định trực tiếp đáp án.
 
-6. **Chú ý chỉ số:** Bài toán sử dụng chỉ số từ 1 đến `n`. Nếu triển khai bằng Python hoặc C++, cần nhớ chuyển đổi chỉ số phù hợp khi truy cập mảng.
+6. **Tối ưu từ Brute Force:** Thay vì thử tất cả vị trí kết thúc với độ phức tạp `O(n^2)`, ta chỉ cần duyệt mảng một lần với độ phức tạp `O(n)`.
 
 ---
 
@@ -496,16 +607,17 @@ Bài toán yêu cầu tìm số lượng ghế lớn nhất có thể ngồi khi
 
 Nhận xét quan trọng nhất là:
 
-- Nếu `p[i] ≤ i`, chiếc ghế được đánh dấu đã được đi qua hoặc là vị trí hiện tại. Vì vậy, lựa chọn này an toàn.
+- Nếu `p[i] <= i`, chiếc ghế được đánh dấu đã được đi qua hoặc là vị trí hiện tại. Vì vậy, lựa chọn này không ảnh hưởng đến quá trình di chuyển tiếp theo.
 - Nếu `p[i] > i`, chiếc ghế được đánh dấu nằm ở phía trước và có thể khiến trò chơi kết thúc sớm.
-- Do đó, chiến lược tối ưu là chỉ ngồi tại những vị trí thỏa mãn `p[i] ≤ i`.
+- Bằng Exchange Argument và tính chất của hoán vị, ta chứng minh được rằng luôn tồn tại một chiến lược tối ưu đi qua tất cả `n` chiếc ghế.
+- Vì vậy, chỉ cần đếm các vị trí thỏa mãn `p[i] <= i`.
 
 Công thức cuối cùng:
 
-\[
-\boxed{ans = \sum_{i=1}^{n}[p[i]\leq i]}
-\]
+```text
+ans = count(p[i] <= i)
+```
 
 Chỉ cần duyệt mảng một lần và đếm các vị trí thỏa mãn điều kiện trên.
 
-Đây là một bài toán điển hình về **Greedy + Permutation + Array**, trong đó việc phân tích ảnh hưởng của một thao tác giúp chuyển bài toán từ không gian tìm kiếm rất lớn thành một phép đếm đơn giản với độ phức tạp `O(n)`.
+Đây là một bài toán điển hình về **Greedy + Permutation + Exchange Argument**, trong đó việc phân tích điểm kết thúc và tận dụng tính chất hoán vị giúp chuyển một bài toán lựa chọn phức tạp thành một phép đếm đơn giản với độ phức tạp `O(n)`.
